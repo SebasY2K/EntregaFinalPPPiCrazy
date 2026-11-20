@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Catálogo de Tenis | CRAZY</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <div class="top-utility">
+    <div class="contenedor top-utility-in">
+      <span>Bodega Central Medellín · 155 referencias 100% únicas · ADDI, Sistecrédito y PSE</span>
+      <div class="top-utility-links">
+        <a href="cuenta.html" id="nav-user-label">Iniciar sesión / Registro</a>
+        <span>|</span>
+        <a href="admin.html">Acceso Administrador</a>
+      </div>
+    </div>
+  </div>
+  <header class="navbar">
+    <div class="contenedor navbar-in">
+      <a href="index.html" class="logo-crazy">
+        <svg width="38" height="38" viewBox="0 0 44 44" fill="none" aria-hidden="true">
+  <defs>
+    <linearGradient id="crzGrad" x1="0" y1="0" x2="44" y2="44" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#111114"/><stop offset="100%" stop-color="#272730"/>
+    </linearGradient>
+    <linearGradient id="crzBolt" x1="18" y1="8" x2="36" y2="34" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#FF6B00"/><stop offset="100%" stop-color="#FF2E00"/>
+    </linearGradient>
+  </defs>
+  <rect width="44" height="44" rx="11" fill="url(#crzGrad)"/>
+  <path d="M29.5 12.2C26.8 10.1 22.8 9.6 18.8 10.9C13.2 12.7 9.8 17.8 10.7 23.4C11.6 28.8 16.7 32.5 22.7 31.8C26.2 31.4 29 29.7 31 27.3L26.8 24C25.5 25.5 23.8 26.4 21.7 26.5C18.4 26.7 16.1 24.7 16 21.6C15.9 18.4 18.4 16 21.8 16C23.7 16 25.3 16.7 26.5 17.8L29.5 12.2Z" fill="#FFFFFF"/>
+  <path d="M25.5 20.8L37 15.5L31.2 22.6L35.2 23.4L24 29.2L27.8 22.4L25.5 20.8Z" fill="url(#crzBolt)"/>
+</svg>
+        <span class="logo-wordmark"><span class="logo-main">CRAZY</span><span class="logo-sub">Sports Co.</span></span>
+      </a>
+      <nav aria-label="Navegación principal">
+        <ul class="nav-links">
+          <li><a href="index.html">Inicio</a></li>
+          <li><a href="tenis.html" class="activo">Tenis</a></li>
+          <li><a href="ropa.html">Ropa</a></li>
+          <li><a href="bolsos.html">Bolsos</a></li>
+          <li><a href="accesorios.html">Accesorios</a></li>
+        </ul>
+      </nav>
+      <div class="nav-actions">
+        <a href="checkout.html" class="btn-cart">Carrito <span class="badge-count" id="nav-cart-count">0</span></a>
+      </div>
+    </div>
+  </header>
+  <section class="hero-nike" style="padding:2rem 0;">
+    <div class="contenedor">
+      <span class="kicker">62 pares 100% únicos</span>
+      <h1 style="font-size:clamp(1.7rem,3.2vw,2.5rem);">Catálogo de Tenis</h1>
+      <p style="margin-bottom:0;">Haz clic en cualquier par para ver su material exacto y elegir talla.</p>
+    </div>
+  </section>
+  <main class="seccion" style="padding-top:2rem;">
+    <div class="contenedor">
+      <div class="filter-bar">
+        
+        <div class="filter-chips">          <button type="button" class="chip" data-brand="Todas">Todas</button>
+          <button type="button" class="chip" data-brand="Nike">Nike</button>
+          <button type="button" class="chip" data-brand="Adidas">Adidas</button>
+          <button type="button" class="chip" data-brand="Puma">Puma</button>
+          <button type="button" class="chip" data-brand="Jordan">Jordan</button>
+          <button type="button" class="chip" data-brand="Under Armour">Under Armour</button>
+          <button type="button" class="chip" data-brand="Reebok">Reebok</button>
+          <button type="button" class="chip" data-brand="New Balance">New Balance</button></div>
+        <div class="search-controls">
+          <input type="search" id="search-input" placeholder="Buscar modelo, material o SKU...">
+          <select id="sort-select"><option value="default">Orden destacado</option><option value="asc">Menor precio</option><option value="desc">Mayor precio</option></select>
+        </div>
+      </div>
+      <p id="catalog-count" class="prod-meta" style="margin-bottom:1.1rem; font-weight:700;"></p>
+      <div class="grid-4" id="catalog-grid"></div>
+      <div class="paginacion" id="catalog-pagination"></div>
+    </div>
+  </main>
+  <div class="modal-bg" id="product-modal" role="dialog" aria-modal="true">
+    <div class="modal-card">
+      <button type="button" class="modal-close" id="m-close" aria-label="Cerrar">&times;</button>
+      <div style="background:#f5f5f7; display:flex; align-items:center; justify-content:center;">
+        <img id="m-img" src="" alt="Producto" style="width:100%; height:100%; object-fit:contain; padding:14px; background:#f5f5f7;">
+      </div>
+      <div style="padding:1.6rem; display:flex; flex-direction:column;">
+        <span class="kicker" id="m-brand" style="margin-bottom:0.35rem;"></span>
+        <h3 id="m-title" style="font-size:1.25rem; margin-bottom:0.4rem;"></h3>
+        <div id="m-price" style="font-size:1.25rem; font-weight:900; margin-bottom:0.65rem;"></div>
+        <p id="m-desc" style="font-size:0.88rem; color:#55555d; margin-bottom:0.75rem;"></p>
+        <div class="material-box" id="m-material"></div>
+        <div id="m-stock" style="font-size:0.82rem; font-weight:700; color:#0f7b4b; margin-bottom:0.55rem;"></div>
+        <strong style="font-size:0.84rem;">Selecciona tu talla:</strong>
+        <div class="tallas-grid" id="m-tallas"></div>
+        <button type="button" class="btn btn-acento" id="m-add" style="width:100%; margin-top:auto;">Agregar al carrito</button>
+      </div>
+    </div>
+  </div>
+  <footer class="footer">
+    <div class="contenedor">
+      <div class="footer-grid">
+        <div>
+          <a href="index.html" class="logo-crazy" style="color:#ffffff; margin-bottom:0.75rem;">
+            <svg width="38" height="38" viewBox="0 0 44 44" fill="none" aria-hidden="true">
+  <defs>
+    <linearGradient id="crzGrad" x1="0" y1="0" x2="44" y2="44" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#111114"/><stop offset="100%" stop-color="#272730"/>
+    </linearGradient>
+    <linearGradient id="crzBolt" x1="18" y1="8" x2="36" y2="34" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#FF6B00"/><stop offset="100%" stop-color="#FF2E00"/>
+    </linearGradient>
+  </defs>
+  <rect width="44" height="44" rx="11" fill="url(#crzGrad)"/>
+  <path d="M29.5 12.2C26.8 10.1 22.8 9.6 18.8 10.9C13.2 12.7 9.8 17.8 10.7 23.4C11.6 28.8 16.7 32.5 22.7 31.8C26.2 31.4 29 29.7 31 27.3L26.8 24C25.5 25.5 23.8 26.4 21.7 26.5C18.4 26.7 16.1 24.7 16 21.6C15.9 18.4 18.4 16 21.8 16C23.7 16 25.3 16.7 26.5 17.8L29.5 12.2Z" fill="#FFFFFF"/>
+  <path d="M25.5 20.8L37 15.5L31.2 22.6L35.2 23.4L24 29.2L27.8 22.4L25.5 20.8Z" fill="url(#crzBolt)"/>
+</svg>
+            <span class="logo-wordmark"><span class="logo-main">CRAZY</span><span class="logo-sub">Sports Co.</span></span>
+          </a>
+          <p style="font-size:0.88rem; max-width:300px;">Tienda deportiva en Medellín con 155 productos reales sin duplicados, detalle de materiales, pagos ADDI / Sistecrédito / PSE y rastreo GPS en vivo.</p>
+        </div>
+        <div>
+          <h4>Catálogo (155 Únicos)</h4>
+          <ul>
+            <li><a href="tenis.html">Tenis (62 modelos)</a></li>
+            <li><a href="ropa.html">Ropa (58 prendas)</a></li>
+            <li><a href="bolsos.html">Bolsos (20 modelos)</a></li>
+            <li><a href="accesorios.html">Accesorios (15 artículos)</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Clientes y Logística</h4>
+          <ul>
+            <li><a href="cuenta.html">Mi Cuenta y Registro</a></li>
+            <li><a href="checkout.html">Carrito, Envío por km y Pagos</a></li>
+            <li><a href="admin.html">Panel Administrador</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Medios de Pago</h4>
+          <ul>
+            <li>ADDI · Sistecrédito</li>
+            <li>PSE · Nequi · Bancolombia</li>
+            <li>Nu Bank · Bogotá · Davivienda</li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>&copy; 2026 CRAZY Sports Co. — Medellín, Antioquia.</span>
+        <span>CRAZY Sports Co. · Medellín, Colombia · Envíos a todo el país</span>
+      </div>
+    </div>
+  </footer>
+  <script src="js/database.js"></script><script src="js/app.js"></script>
+  <script>document.addEventListener('DOMContentLoaded', () => CrazyUI.renderCatalogPage({ categories: ['tenis'] }));</script>
+</body>
+</html>

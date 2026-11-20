@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mi Cuenta | CRAZY</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <div class="top-utility">
+    <div class="contenedor top-utility-in">
+      <span>Bodega Central Medellín · 155 referencias 100% únicas · ADDI, Sistecrédito y PSE</span>
+      <div class="top-utility-links">
+        <a href="cuenta.html" id="nav-user-label">Iniciar sesión / Registro</a>
+        <span>|</span>
+        <a href="admin.html">Acceso Administrador</a>
+      </div>
+    </div>
+  </div>
+  <header class="navbar">
+    <div class="contenedor navbar-in">
+      <a href="index.html" class="logo-crazy">
+        <svg width="38" height="38" viewBox="0 0 44 44" fill="none" aria-hidden="true">
+  <defs>
+    <linearGradient id="crzGrad" x1="0" y1="0" x2="44" y2="44" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#111114"/><stop offset="100%" stop-color="#272730"/>
+    </linearGradient>
+    <linearGradient id="crzBolt" x1="18" y1="8" x2="36" y2="34" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#FF6B00"/><stop offset="100%" stop-color="#FF2E00"/>
+    </linearGradient>
+  </defs>
+  <rect width="44" height="44" rx="11" fill="url(#crzGrad)"/>
+  <path d="M29.5 12.2C26.8 10.1 22.8 9.6 18.8 10.9C13.2 12.7 9.8 17.8 10.7 23.4C11.6 28.8 16.7 32.5 22.7 31.8C26.2 31.4 29 29.7 31 27.3L26.8 24C25.5 25.5 23.8 26.4 21.7 26.5C18.4 26.7 16.1 24.7 16 21.6C15.9 18.4 18.4 16 21.8 16C23.7 16 25.3 16.7 26.5 17.8L29.5 12.2Z" fill="#FFFFFF"/>
+  <path d="M25.5 20.8L37 15.5L31.2 22.6L35.2 23.4L24 29.2L27.8 22.4L25.5 20.8Z" fill="url(#crzBolt)"/>
+</svg>
+        <span class="logo-wordmark"><span class="logo-main">CRAZY</span><span class="logo-sub">Sports Co.</span></span>
+      </a>
+      <nav aria-label="Navegación principal">
+        <ul class="nav-links">
+          <li><a href="index.html">Inicio</a></li>
+          <li><a href="tenis.html">Tenis</a></li>
+          <li><a href="ropa.html">Ropa</a></li>
+          <li><a href="bolsos.html">Bolsos</a></li>
+          <li><a href="accesorios.html">Accesorios</a></li>
+        </ul>
+      </nav>
+      <div class="nav-actions">
+        <a href="checkout.html" class="btn-cart">Carrito <span class="badge-count" id="nav-cart-count">0</span></a>
+      </div>
+    </div>
+  </header>
+
+  <main class="seccion">
+    <div class="contenedor">
+      <div id="sesion-activa-box" style="display:none; background:#f5f5f7; border:1px solid #e5e5ea; border-radius:14px; padding:1.6rem; margin-bottom:2rem;">
+        <span class="kicker">Sesión activa</span>
+        <h2 id="ses-nombre" style="margin-bottom:0.35rem;"></h2>
+        <p id="ses-datos" class="prod-meta" style="margin-bottom:1.1rem;"></p>
+        <div style="display:flex; gap:0.8rem; flex-wrap:wrap;">
+          <a href="checkout.html" class="btn btn-acento">Ir a mi carrito</a>
+          <a href="tenis.html" class="btn btn-negro">Seguir comprando</a>
+          <button type="button" class="btn btn-borde" id="btn-logout">Cerrar sesión</button>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <section style="border:1px solid #e5e5ea; border-radius:14px; padding:1.9rem;">
+          <span class="kicker">Clientes registrados</span>
+          <h2 style="margin-bottom:1rem;">Iniciar sesión</h2>
+          <form id="form-login" style="display:grid; gap:0.9rem;">
+            <div>
+              <label for="l-correo" style="display:block; font-weight:700; font-size:0.85rem; margin-bottom:0.25rem;">Correo electrónico</label>
+              <input type="email" id="l-correo" required placeholder="cliente@crazy.com" style="width:100%;">
+            </div>
+            <div>
+              <label for="l-pass" style="display:block; font-weight:700; font-size:0.85rem; margin-bottom:0.25rem;">Contraseña</label>
+              <input type="password" id="l-pass" required placeholder="••••••••" style="width:100%;">
+            </div>
+            <button type="submit" class="btn btn-negro">Entrar a mi cuenta</button>
+            <div id="login-msg" class="alert-msg"></div>
+          </form>
+        </section>
+
+        <section style="background:#f5f5f7; border:1px solid #e5e5ea; border-radius:14px; padding:1.9rem;">
+          <span class="kicker">Nuevo cliente CRAZY</span>
+          <h2 style="margin-bottom:1rem;">Crear cuenta</h2>
+          <form id="form-reg" style="display:grid; gap:0.85rem;">
+            <div>
+              <label for="r-nombre" style="display:block; font-weight:700; font-size:0.85rem; margin-bottom:0.25rem;">Nombre completo (solo letras)</label>
+              <input type="text" id="r-nombre" required placeholder="Ej. Laura Gómez" style="width:100%;">
+            </div>
+            <div>
+              <label for="r-cedula" style="display:block; font-weight:700; font-size:0.85rem; margin-bottom:0.25rem;">Cédula (solo números)</label>
+              <input type="text" id="r-cedula" required inputmode="numeric" maxlength="10" placeholder="Ej. 1020456789" style="width:100%;">
+            </div>
+            <div>
+              <label for="r-dir" style="display:block; font-weight:700; font-size:0.85rem; margin-bottom:0.25rem;">Dirección de entrega</label>
+              <input type="text" id="r-dir" required placeholder="Ej. Carrera 80 # 32-15, Medellín" style="width:100%;">
+            </div>
+            <div>
+              <label for="r-correo" style="display:block; font-weight:700; font-size:0.85rem; margin-bottom:0.25rem;">Correo electrónico</label>
+              <input type="email" id="r-correo" required placeholder="correo@ejemplo.com" style="width:100%;">
+            </div>
+            <div>
+              <label for="r-pass" style="display:block; font-weight:700; font-size:0.85rem; margin-bottom:0.25rem;">Contraseña (mínimo 6 caracteres)</label>
+              <input type="password" id="r-pass" required minlength="6" placeholder="Crea una clave segura" style="width:100%;">
+            </div>
+            <button type="submit" class="btn btn-acento">Registrarme en la base de datos</button>
+            <div id="reg-msg" class="alert-msg"></div>
+          </form>
+        </section>
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="contenedor">
+      <div class="footer-grid">
+        <div>
+          <a href="index.html" class="logo-crazy" style="color:#ffffff; margin-bottom:0.75rem;">
+            <svg width="38" height="38" viewBox="0 0 44 44" fill="none" aria-hidden="true">
+  <defs>
+    <linearGradient id="crzGrad" x1="0" y1="0" x2="44" y2="44" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#111114"/><stop offset="100%" stop-color="#272730"/>
+    </linearGradient>
+    <linearGradient id="crzBolt" x1="18" y1="8" x2="36" y2="34" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#FF6B00"/><stop offset="100%" stop-color="#FF2E00"/>
+    </linearGradient>
+  </defs>
+  <rect width="44" height="44" rx="11" fill="url(#crzGrad)"/>
+  <path d="M29.5 12.2C26.8 10.1 22.8 9.6 18.8 10.9C13.2 12.7 9.8 17.8 10.7 23.4C11.6 28.8 16.7 32.5 22.7 31.8C26.2 31.4 29 29.7 31 27.3L26.8 24C25.5 25.5 23.8 26.4 21.7 26.5C18.4 26.7 16.1 24.7 16 21.6C15.9 18.4 18.4 16 21.8 16C23.7 16 25.3 16.7 26.5 17.8L29.5 12.2Z" fill="#FFFFFF"/>
+  <path d="M25.5 20.8L37 15.5L31.2 22.6L35.2 23.4L24 29.2L27.8 22.4L25.5 20.8Z" fill="url(#crzBolt)"/>
+</svg>
+            <span class="logo-wordmark"><span class="logo-main">CRAZY</span><span class="logo-sub">Sports Co.</span></span>
+          </a>
+          <p style="font-size:0.88rem; max-width:300px;">Tienda deportiva en Medellín con 155 productos reales sin duplicados, detalle de materiales, pagos ADDI / Sistecrédito / PSE y rastreo GPS en vivo.</p>
+        </div>
+        <div>
+          <h4>Catálogo (155 Únicos)</h4>
+          <ul>
+            <li><a href="tenis.html">Tenis (62 modelos)</a></li>
+            <li><a href="ropa.html">Ropa (58 prendas)</a></li>
+            <li><a href="bolsos.html">Bolsos (20 modelos)</a></li>
+            <li><a href="accesorios.html">Accesorios (15 artículos)</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Clientes y Logística</h4>
+          <ul>
+            <li><a href="cuenta.html">Mi Cuenta y Registro</a></li>
+            <li><a href="checkout.html">Carrito, Envío por km y Pagos</a></li>
+            <li><a href="admin.html">Panel Administrador</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Medios de Pago</h4>
+          <ul>
+            <li>ADDI · Sistecrédito</li>
+            <li>PSE · Nequi · Bancolombia</li>
+            <li>Nu Bank · Bogotá · Davivienda</li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>&copy; 2026 CRAZY Sports Co. — Medellín, Antioquia.</span>
+        <span>CRAZY Sports Co. · Medellín, Colombia · Envíos a todo el país</span>
+      </div>
+    </div>
+  </footer>
+  <script src="js/database.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    document.getElementById('r-cedula').addEventListener('input', e => { e.target.value = e.target.value.replace(/[^0-9]/g, '').slice(0, 10); });
+    document.getElementById('r-nombre').addEventListener('input', e => { e.target.value = e.target.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, ''); });
+
+    function checkSession() {
+      const s = CrazyDB.getSesion();
+      const box = document.getElementById('sesion-activa-box');
+      if (s) {
+        box.style.display = 'block';
+        document.getElementById('ses-nombre').textContent = s.nombre;
+        document.getElementById('ses-datos').textContent = `Cédula: ${s.cedula} · Correo: ${s.correo} · Dirección: ${s.direccion}`;
+      } else {
+        box.style.display = 'none';
+      }
+      CrazyUI.updateHeader();
+    }
+
+    document.getElementById('btn-logout').onclick = () => { CrazyDB.logout(); checkSession(); };
+    document.getElementById('form-login').onsubmit = e => {
+      e.preventDefault();
+      const res = CrazyDB.login(document.getElementById('l-correo').value.trim(), document.getElementById('l-pass').value);
+      const m = document.getElementById('login-msg');
+      if (!res.ok) { m.className = 'alert-msg err'; m.textContent = res.msg; return; }
+      m.className = 'alert-msg ok'; m.textContent = '¡Bienvenido de nuevo, ' + res.user.nombre + '!';
+      checkSession();
+    };
+    document.getElementById('form-reg').onsubmit = e => {
+      e.preventDefault();
+      const ced = document.getElementById('r-cedula').value.trim();
+      const m = document.getElementById('reg-msg');
+      if (ced.length < 6) { m.className = 'alert-msg err'; m.textContent = 'Ingresa una cédula válida (6 a 10 dígitos).'; return; }
+      const res = CrazyDB.registrarUsuario({
+        nombre: document.getElementById('r-nombre').value.trim(), cedula: ced,
+        direccion: document.getElementById('r-dir').value.trim(),
+        correo: document.getElementById('r-correo').value.trim(), pass: document.getElementById('r-pass').value
+      });
+      if (!res.ok) { m.className = 'alert-msg err'; m.textContent = res.msg; return; }
+      m.className = 'alert-msg ok'; m.textContent = 'Registro exitoso. Tus datos quedaron guardados en CRAZY.';
+      e.target.reset();
+      checkSession();
+    };
+    checkSession();
+  </script>
+</body>
+</html>

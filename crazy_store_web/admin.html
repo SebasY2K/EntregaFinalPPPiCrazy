@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin, Mapa GPS Colombia y Base de Datos | CRAZY</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+</head>
+<body>
+  <div class="top-utility">
+    <div class="contenedor top-utility-in">
+      <span>Bodega Central Medellín · 155 referencias 100% únicas · ADDI, Sistecrédito y PSE</span>
+      <div class="top-utility-links">
+        <a href="cuenta.html" id="nav-user-label">Iniciar sesión / Registro</a>
+        <span>|</span>
+        <a href="admin.html">Acceso Administrador</a>
+      </div>
+    </div>
+  </div>
+  <header class="navbar">
+    <div class="contenedor navbar-in">
+      <a href="index.html" class="logo-crazy">
+        <svg width="38" height="38" viewBox="0 0 44 44" fill="none" aria-hidden="true">
+  <defs>
+    <linearGradient id="crzGrad" x1="0" y1="0" x2="44" y2="44" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#111114"/><stop offset="100%" stop-color="#272730"/>
+    </linearGradient>
+    <linearGradient id="crzBolt" x1="18" y1="8" x2="36" y2="34" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#FF6B00"/><stop offset="100%" stop-color="#FF2E00"/>
+    </linearGradient>
+  </defs>
+  <rect width="44" height="44" rx="11" fill="url(#crzGrad)"/>
+  <path d="M29.5 12.2C26.8 10.1 22.8 9.6 18.8 10.9C13.2 12.7 9.8 17.8 10.7 23.4C11.6 28.8 16.7 32.5 22.7 31.8C26.2 31.4 29 29.7 31 27.3L26.8 24C25.5 25.5 23.8 26.4 21.7 26.5C18.4 26.7 16.1 24.7 16 21.6C15.9 18.4 18.4 16 21.8 16C23.7 16 25.3 16.7 26.5 17.8L29.5 12.2Z" fill="#FFFFFF"/>
+  <path d="M25.5 20.8L37 15.5L31.2 22.6L35.2 23.4L24 29.2L27.8 22.4L25.5 20.8Z" fill="url(#crzBolt)"/>
+</svg>
+        <span class="logo-wordmark"><span class="logo-main">CRAZY</span><span class="logo-sub">Sports Co.</span></span>
+      </a>
+      <nav aria-label="Navegación principal">
+        <ul class="nav-links">
+          <li><a href="index.html">Inicio</a></li>
+          <li><a href="tenis.html">Tenis</a></li>
+          <li><a href="ropa.html">Ropa</a></li>
+          <li><a href="bolsos.html">Bolsos</a></li>
+          <li><a href="accesorios.html">Accesorios</a></li>
+        </ul>
+      </nav>
+      <div class="nav-actions">
+        <a href="checkout.html" class="btn-cart">Carrito <span class="badge-count" id="nav-cart-count">0</span></a>
+      </div>
+    </div>
+  </header>
+  <main class="seccion">
+    <div class="contenedor">
+      <div id="admin-gate" style="max-width:480px; margin:1.5rem auto; border:1px solid #e5e5ea; border-radius:16px; padding:2rem;">
+        <span class="kicker">Centro de Control CRAZY</span>
+        <h2 style="margin-bottom:0.6rem;">Admin, Mapa GPS y Base de Datos</h2>
+        <p class="prod-meta" style="margin-bottom:1.1rem;">Sigue en vivo cada domiciliario en el mapa de Colombia (OpenStreetMap), revisa su cédula, celular, método de cobro y toda la base de datos.</p>
+        <form id="form-admin-login" style="display:grid; gap:0.85rem;">
+          <input type="email" id="a-mail" value="admin@crazy.com" required>
+          <input type="password" id="a-pass" value="CrazyAdmin2026" required>
+          <button type="submit" class="btn btn-acento">Ingresar al Centro de Control</button>
+          <div id="a-msg" class="alert-msg"></div>
+        </form>
+      </div>
+
+      <div id="admin-panel" style="display:none;">
+        <div class="sec-head">
+          <div><span class="kicker">Logística GPS Colombia &amp; Almacén Virtual</span><h2>Panel Administrador CRAZY</h2></div>
+          <div style="display:flex; gap:0.6rem; flex-wrap:wrap;">
+            <button type="button" class="btn btn-borde btn-sm" id="btn-export-json">Exportar BD JSON</button>
+            <button type="button" class="btn btn-negro btn-sm" id="btn-reset-db">Restaurar BD (155)</button>
+          </div>
+        </div>
+
+        <div class="kpi-grid">
+          <div class="kpi-card"><div class="kpi-val" id="k-refs">155</div><div class="kpi-lbl">Productos únicos en BD</div></div>
+          <div class="kpi-card"><div class="kpi-val" id="k-entregados" style="color:#0f7b4b;">0 / 0</div><div class="kpi-lbl">Entregas exitosas (bloqueadas)</div></div>
+          <div class="kpi-card"><div class="kpi-val" id="k-envios" style="color:#ff4d00;">$0</div><div class="kpi-lbl">Total domicilios</div></div>
+          <div class="kpi-card"><div class="kpi-val" id="k-rev" style="color:#0f7b4b;">$0</div><div class="kpi-lbl">Total ventas + domicilios</div></div>
+        </div>
+
+        <div class="admin-tabs">
+          <button type="button" class="tab-btn activo" data-tab="tab-gps">🗺️ Mapa GPS Colombia y Domiciliarios</button>
+          <button type="button" class="tab-btn" data-tab="tab-bd-dom">🛵 Base de Datos Domiciliarios</button>
+          <button type="button" class="tab-btn" data-tab="tab-inventario">📦 Almacén (155 Productos)</button>
+          <button type="button" class="tab-btn" data-tab="tab-usuarios">👥 Usuarios</button>
+        </div>
+
+        <!-- TAB 1: MAPA COLOMBIA ESRI CALLES + EMULACION GPS CON TRAYECTO Y KM -->
+        <section id="tab-gps" class="tab-panel activo">
+          <div style="background:#111114; color:#ffffff; border-radius:14px; padding:1.15rem 1.4rem; margin-bottom:1rem; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.8rem;">
+            <div>
+              <span class="kicker" style="margin-bottom:0.2rem;">Mapa Interactivo de Colombia (Sin API Key · Calles, Satélite y Radar)</span>
+              <h3 style="font-size:1.1rem;">Emulación de Entregas GPS en Tiempo Real</h3>
+              <p style="font-size:0.82rem; color:#c8c8d2;">Haz clic en cualquier domicilio abajo (o selecciónalo aquí) para ver su <strong>trayecto exacto y kilómetros</strong> en el mapa, y pulsa <strong>"▶ Emular entrega GPS"</strong>.</p>
+            </div>
+            <div style="display:flex; gap:0.45rem; flex-wrap:wrap;">
+              <button type="button" class="btn btn-acento btn-sm" id="btn-mode-streets">🗺️ Calles Colombia</button>
+              <button type="button" class="btn btn-borde btn-sm" id="btn-mode-sat" style="color:#fff; border-color:#fff;">🛰️ Satélite</button>
+              <button type="button" class="btn btn-borde btn-sm" id="btn-mode-radar" style="color:#fff; border-color:#fff;">📡 Radar Offline</button>
+            </div>
+          </div>
+
+          <!-- Barra HUD del domicilio seleccionado en el mapa -->
+          <div id="map-selected-hud" style="background:#f5f5f7; border:1.5px solid #111114; border-radius:12px; padding:0.85rem 1.15rem; margin-bottom:0.9rem; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.8rem;">
+            <div id="hud-info" style="font-size:0.88rem;">Selecciona un domicilio para trazar su ruta y kilómetros en el mapa.</div>
+            <div id="hud-actions" style="display:flex; gap:0.5rem; flex-wrap:wrap;"></div>
+          </div>
+
+          <!-- Mapa Leaflet (ESRI ArcGIS World Street / Satélite — GRATIS, SIN API KEY) -->
+          <div id="colombia-map" style="height:460px; display:block;"></div>
+
+          <!-- Motor alterno Radar Offline (SVG 100% sin internet) -->
+          <div id="radar-wrap" style="display:none; background:linear-gradient(180deg,#0b192c 0%,#102a43 100%); border-radius:16px; border:2px solid #1e3a5f; padding:1rem; margin-bottom:1.4rem;">
+            <svg id="colombia-svg" viewBox="0 0 820 560" style="width:100%; height:auto; max-height:480px; display:block; background:#0d2137; border-radius:12px;">
+              <rect width="820" height="560" fill="#0d2137"/>
+              <path d="M 380 42 L 435 55 L 415 88 L 370 112 L 320 125 L 285 152 L 265 188 L 245 208 L 235 255 L 222 308 L 195 365 L 170 408 L 205 435 L 258 455 L 315 478 L 385 525 L 448 520 L 490 485 L 548 455 L 598 408 L 625 352 L 602 292 L 560 250 L 520 228 L 492 182 L 465 148 L 442 118 L 430 82 Z"
+                    fill="#163a59" stroke="#3b82f6" stroke-width="2"/>
+              <g id="svg-routes"></g>
+              <g id="svg-cities"></g>
+              <g id="svg-couriers"></g>
+            </svg>
+          </div>
+
+          <h3 style="margin:1.2rem 0 0.75rem;">Domicilios activos (haz clic en "Ver trayecto en mapa" o "Emular entrega GPS")</h3>
+          <div id="deliveries-list"></div>
+        </section>
+
+        <!-- TAB 2: BASE DE DATOS DE DOMICILIARIOS Y ENTREGAS -->
+        <section id="tab-bd-dom" class="tab-panel">
+          <h3 style="margin-bottom:0.75rem;">1. Registro de Domiciliarios Activos (Nombre, Cédula, Celular y Placa)</h3>
+          <div class="tabla-wrap" style="margin-bottom:1.8rem;">
+            <table>
+              <thead><tr><th>ID</th><th>Nombre Domiciliario</th><th>Cédula</th><th>Celular</th><th>Vehículo / Placa</th></tr></thead>
+              <tbody id="tbl-couriers"></tbody>
+            </table>
+          </div>
+          <h3 style="margin-bottom:0.75rem;">2. Tabla de Pedidos, Destinos, Totales y Cobro del Domiciliario</h3>
+          <div class="tabla-wrap">
+            <table>
+              <thead><tr><th>Pedido</th><th>Domiciliario (Cédula / Tel)</th><th>Destino</th><th>Compra</th><th>Domicilio</th><th>Total</th><th>Recibe Domiciliario</th><th>Estado</th></tr></thead>
+              <tbody id="tbl-dom-bd"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- TAB 3: INVENTARIO (155 PRODUCTOS) -->
+        <section id="tab-inventario" class="tab-panel">
+          <h3 style="margin-bottom:0.75rem;">Agregar nueva referencia al almacén</h3>
+          <form id="form-add-prod" class="filter-bar" style="gap:0.6rem;">
+            <input type="text" id="np-nombre" placeholder="Nombre único" required style="flex:2; min-width:160px;">
+            <select id="np-marca"><option>Nike</option><option>Adidas</option><option>Puma</option><option>Jordan</option><option>Under Armour</option><option>Reebok</option><option>New Balance</option></select>
+            <select id="np-cat"><option value="tenis">Tenis</option><option value="camisas">Camisas</option><option value="sudaderas">Sudaderas</option><option value="bolsos">Bolsos</option><option value="accesorios">Accesorios</option></select>
+            <input type="text" id="np-mat" placeholder="Material (ej. Cuero / Poliéster)" required style="flex:1.5; min-width:150px;">
+            <input type="number" id="np-precio" placeholder="Precio COP" min="20000" required style="width:120px;">
+            <input type="number" id="np-stock" placeholder="Stock" min="1" value="15" required style="width:80px;">
+            <button type="submit" class="btn btn-acento btn-sm">Guardar</button>
+          </form>
+          <div style="margin-bottom:0.8rem;"><input type="search" id="adm-search" placeholder="Filtrar entre los 155 productos..." style="width:min(100%, 380px);"></div>
+          <div class="tabla-wrap">
+            <table>
+              <thead><tr><th>Foto</th><th>SKU</th><th>Producto</th><th>Marca</th><th>Material</th><th>Precio</th><th>Stock</th><th>Vendidos</th><th>+Stock</th></tr></thead>
+              <tbody id="tbl-inv"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- TAB 4: USUARIOS -->
+        <section id="tab-usuarios" class="tab-panel">
+          <h3 style="margin-bottom:0.75rem;">Base de datos de clientes registrados</h3>
+          <div class="tabla-wrap">
+            <table><thead><tr><th>Nombre</th><th>Cédula</th><th>Correo</th><th>Dirección</th><th>Rol</th></tr></thead><tbody id="tbl-usuarios"></tbody></table>
+          </div>
+        </section>
+      </div>
+    </div>
+  </main>
+  <footer class="footer">
+    <div class="contenedor">
+      <div class="footer-grid">
+        <div>
+          <a href="index.html" class="logo-crazy" style="color:#ffffff; margin-bottom:0.75rem;">
+            <svg width="38" height="38" viewBox="0 0 44 44" fill="none" aria-hidden="true">
+  <defs>
+    <linearGradient id="crzGrad" x1="0" y1="0" x2="44" y2="44" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#111114"/><stop offset="100%" stop-color="#272730"/>
+    </linearGradient>
+    <linearGradient id="crzBolt" x1="18" y1="8" x2="36" y2="34" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#FF6B00"/><stop offset="100%" stop-color="#FF2E00"/>
+    </linearGradient>
+  </defs>
+  <rect width="44" height="44" rx="11" fill="url(#crzGrad)"/>
+  <path d="M29.5 12.2C26.8 10.1 22.8 9.6 18.8 10.9C13.2 12.7 9.8 17.8 10.7 23.4C11.6 28.8 16.7 32.5 22.7 31.8C26.2 31.4 29 29.7 31 27.3L26.8 24C25.5 25.5 23.8 26.4 21.7 26.5C18.4 26.7 16.1 24.7 16 21.6C15.9 18.4 18.4 16 21.8 16C23.7 16 25.3 16.7 26.5 17.8L29.5 12.2Z" fill="#FFFFFF"/>
+  <path d="M25.5 20.8L37 15.5L31.2 22.6L35.2 23.4L24 29.2L27.8 22.4L25.5 20.8Z" fill="url(#crzBolt)"/>
+</svg>
+            <span class="logo-wordmark"><span class="logo-main">CRAZY</span><span class="logo-sub">Sports Co.</span></span>
+          </a>
+          <p style="font-size:0.88rem; max-width:300px;">Tienda deportiva en Medellín con 155 productos reales sin duplicados, detalle de materiales, pagos ADDI / Sistecrédito / PSE y rastreo GPS en vivo.</p>
+        </div>
+        <div>
+          <h4>Catálogo (155 Únicos)</h4>
+          <ul>
+            <li><a href="tenis.html">Tenis (62 modelos)</a></li>
+            <li><a href="ropa.html">Ropa (58 prendas)</a></li>
+            <li><a href="bolsos.html">Bolsos (20 modelos)</a></li>
+            <li><a href="accesorios.html">Accesorios (15 artículos)</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Clientes y Logística</h4>
+          <ul>
+            <li><a href="cuenta.html">Mi Cuenta y Registro</a></li>
+            <li><a href="checkout.html">Carrito, Envío por km y Pagos</a></li>
+            <li><a href="admin.html">Panel Administrador</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Medios de Pago</h4>
+          <ul>
+            <li>ADDI · Sistecrédito</li>
+            <li>PSE · Nequi · Bancolombia</li>
+            <li>Nu Bank · Bogotá · Davivienda</li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>&copy; 2026 CRAZY Sports Co. — Medellín, Antioquia.</span>
+        <span>CRAZY Sports Co. · Medellín, Colombia · Envíos a todo el país</span>
+      </div>
+    </div>
+  </footer>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="js/database.js"></script><script src="js/app.js"></script>
+  <script>
+    const MED_LAT = 6.2442, MED_LNG = -75.5812;
+    let map = null;
+    let mapMode = 'streets';
+    let streetLayer = null, satLayer = null;
+    let selectedCode = null;
+    let routeGroup = null;
+    const activeTimers = {};
+
+    // Genera una ruta curva realista de 60 puntos entre Bodega Medellín y el destino
+    function buildRoutePoints(destLat, destLng, steps = 60) {
+      const pts = [];
+      const dLat = destLat - MED_LAT;
+      const dLng = destLng - MED_LNG;
+      const dist = Math.hypot(dLat, dLng) || 0.001;
+      const curveAmp = Math.min(0.32, dist * 0.14);
+      const perpLat = (-dLng / dist) * curveAmp;
+      const perpLng = (dLat / dist) * curveAmp;
+      for (let i = 0; i <= steps; i++) {
+        const t = i / steps;
+        const bend = Math.sin(Math.PI * t);
+        pts.push([
+          MED_LAT + dLat * t + perpLat * bend,
+          MED_LNG + dLng * t + perpLng * bend
+        ]);
+      }
+      return pts;
+    }
+
+    function pointOnRoute(pts, pct) {
+      const t = Math.max(0, Math.min(1, pct / 100));
+      const idx = Math.min(pts.length - 1, Math.round(t * (pts.length - 1)));
+      return { idx, coord: pts[idx] };
+    }
+
+    function latLngToSVG(lat, lng) {
+      const x = 135 + ((lng - (-79.2)) / 12.2) * 550;
+      const y = 35 + ((12.6 - lat) / 12.1) * 490;
+      return [x, y];
+    }
+
+    function renderRadarSVG(orders) {
+      const gCities = document.getElementById('svg-cities');
+      const gRoutes = document.getElementById('svg-routes');
+      const gCouriers = document.getElementById('svg-couriers');
+      if (!gCities) return;
+
+      if (gCities.childNodes.length === 0) {
+        const cities = CrazyDB.getCities();
+        const showLabelIds = new Set(['medellin','rionegro','manizales','pereira','bogota','cali','bucaramanga','cartagena','barranquilla','santa_marta','cucuta','pasto','envigado','bello']);
+        cities.forEach(c => {
+          const [cx, cy] = latLngToSVG(c.lat, c.lng);
+          const isMed = c.id === 'medellin';
+          const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+          const dot = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+          dot.setAttribute('cx', cx); dot.setAttribute('cy', cy);
+          dot.setAttribute('r', isMed ? 7 : 4.2);
+          dot.setAttribute('fill', isMed ? '#ff4d00' : '#38bdf8');
+          dot.setAttribute('stroke', '#ffffff'); dot.setAttribute('stroke-width', isMed ? '2' : '1.2');
+          g.appendChild(dot);
+          if (showLabelIds.has(c.id)) {
+            const txt = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+            txt.setAttribute('x', cx + (isMed ? -54 : 8));
+            txt.setAttribute('y', cy + (isMed ? -10 : 3));
+            txt.setAttribute('fill', isMed ? '#ff9f43' : '#e2e8f0');
+            txt.setAttribute('font-size', isMed ? '11' : '9.5');
+            txt.setAttribute('font-weight', isMed ? '800' : '600');
+            txt.setAttribute('font-family', 'Arial, sans-serif');
+            txt.textContent = isMed ? 'Bodega Medellín' : c.ciudad;
+            g.appendChild(txt);
+          }
+          gCities.appendChild(g);
+        });
+      }
+
+      gRoutes.innerHTML = '';
+      gCouriers.innerHTML = '';
+      const [mx, my] = latLngToSVG(MED_LAT, MED_LNG);
+      orders.forEach(o => {
+        const isSel = o.codigo === selectedCode;
+        const pts = buildRoutePoints(o.dest_lat, o.dest_lng, 30);
+        const cur = pointOnRoute(pts, o.progreso).coord;
+        const [dx, dy] = latLngToSVG(o.dest_lat, o.dest_lng);
+        const [px, py] = latLngToSVG(cur[0], cur[1]);
+
+        const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        line.setAttribute('x1', mx); line.setAttribute('y1', my);
+        line.setAttribute('x2', dx); line.setAttribute('y2', dy);
+        line.setAttribute('stroke', o.entregado ? '#10b981' : (isSel ? '#ff4d00' : '#94a3b8'));
+        line.setAttribute('stroke-width', isSel ? '3.5' : '1.8');
+        if (!o.entregado) line.setAttribute('stroke-dasharray', '6,4');
+        gRoutes.appendChild(line);
+
+        const cg = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+        cg.setAttribute('transform', `translate(${px}, ${py})`);
+        const kmRec = (o.km * (o.progreso / 100)).toFixed(1);
+        cg.innerHTML = `<circle r="${isSel ? 13 : 9}" fill="${o.entregado ? '#0f7b4b' : '#ff4d00'}" stroke="#ffffff" stroke-width="2"/><text y="4" text-anchor="middle" font-size="11" fill="#ffffff" font-weight="900">${o.entregado ? '✓' : '🛵'}</text><text y="-16" text-anchor="middle" font-size="9.5" fill="#ffffff" font-weight="800" font-family="Arial">${o.codigo} · ${kmRec}/${o.km} km</text>`;
+        gCouriers.appendChild(cg);
+      });
+    }
+
+    function initMap() {
+      if (map || typeof L === 'undefined') return;
+      map = L.map('colombia-map', { zoomControl: true }).setView([6.2442, -75.5812], 6);
+
+      // ESRI ArcGIS World Street Map (GRATIS, SIN API KEY, funciona desde file://)
+      streetLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', {
+        attribution: 'Tiles &copy; Esri &mdash; World Street Map',
+        maxZoom: 18
+      });
+      satLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+        attribution: 'Tiles &copy; Esri &mdash; World Imagery',
+        maxZoom: 18
+      });
+      streetLayer.addTo(map);
+      routeGroup = L.layerGroup().addTo(map);
+
+      // Marcador fijo Bodega Principal Medellín
+      L.circleMarker([MED_LAT, MED_LNG], { radius: 9, color: '#111114', weight: 2.5, fillColor: '#ff4d00', fillOpacity: 1 })
+        .addTo(map).bindTooltip('🏢 Bodega Medellín (Origen)', { permanent: true, direction: 'top', offset: [0, -8] });
+
+      // Ciudades de Colombia disponibles
+      CrazyDB.getCities().forEach(c => {
+        const m = L.circleMarker([c.lat, c.lng], { radius: 4.5, color: '#1e3a8a', weight: 1.5, fillColor: '#3b82f6', fillOpacity: 0.85 }).addTo(map);
+        m.bindPopup(`<strong>${c.ciudad}, ${c.depto}</strong><br>Distancia desde Medellín: <strong>${c.km} km</strong><br>Tarifa domicilio: ${CrazyUI.cop(c.costo)}<br><a target="_blank" href="https://www.google.com/maps/dir/Medellin,+Antioquia/${encodeURIComponent(c.ciudad + ', ' + c.depto + ', Colombia')}">Abrir en Google Maps ↗</a>`);
+      });
+    }
+
+    function updateHUD(order) {
+      const info = document.getElementById('hud-info');
+      const actions = document.getElementById('hud-actions');
+      if (!info || !actions) return;
+      if (!order) {
+        info.innerHTML = 'Selecciona un domicilio abajo para ver su <strong>trayecto exacto y kilómetros</strong> en el mapa.';
+        actions.innerHTML = '';
+        return;
+      }
+      const kmRec = (order.km * (order.progreso / 100)).toFixed(1);
+      const kmRest = Math.max(0, order.km - Number(kmRec)).toFixed(1);
+      info.innerHTML = `
+        <div style="font-weight:800; color:#111114; margin-bottom:0.15rem;">
+          🛵 Trayecto activo: Medellín ➔ ${order.ciudad} (${order.codigo}) · <span style="color:#ff4d00;">${order.km} km totales</span>
+        </div>
+        <div style="font-size:0.82rem; color:#4b4b52;">
+          Recorridos: <strong style="color:#0f7b4b;">${kmRec} km</strong> · Restantes: <strong style="color:#ff4d00;">${kmRest} km</strong> (${Math.round(order.progreso)}%) · Domiciliario: <strong>${order.domiciliario}</strong> (CC ${order.dom_cedula})
+        </div>
+      `;
+      if (order.bloqueado) {
+        actions.innerHTML = '<span class="lock-badge">🔒 Entregado con éxito (bloqueado)</span>';
+      } else {
+        const running = Boolean(activeTimers[order.codigo]);
+        actions.innerHTML = `
+          <button type="button" class="btn btn-acento btn-sm" id="hud-btn-sim">${running ? '🛵 Emulando en vivo...' : '▶ Emular entrega GPS'}</button>
+          <button type="button" class="btn btn-sm" style="background:#0f7b4b; color:#fff;" id="hud-btn-done">Confirmar Entrega ✓</button>
+        `;
+        document.getElementById('hud-btn-sim').onclick = () => startLiveGPS(order.codigo);
+        document.getElementById('hud-btn-done').onclick = () => {
+          if (activeTimers[order.codigo]) { clearInterval(activeTimers[order.codigo]); delete activeTimers[order.codigo]; }
+          CrazyDB.setProgresoGPS(order.codigo, 100);
+          renderAdmin();
+        };
+      }
+    }
+
+    function syncMapMarkers(orders, shouldFit = false) {
+      if (!selectedCode && orders.length) selectedCode = orders[0].codigo;
+      const selOrder = orders.find(o => o.codigo === selectedCode) || orders[0] || null;
+      updateHUD(selOrder);
+      renderRadarSVG(orders);
+      if (!map || !routeGroup) return;
+
+      routeGroup.clearLayers();
+      orders.forEach(o => {
+        const isSel = selOrder && o.codigo === selOrder.codigo;
+        const pts = buildRoutePoints(o.dest_lat, o.dest_lng, 60);
+        const cur = pointOnRoute(pts, o.progreso);
+        const coveredPts = pts.slice(0, cur.idx + 1);
+        const remainPts = pts.slice(cur.idx);
+        const kmRec = (o.km * (o.progreso / 100)).toFixed(1);
+        const kmRest = Math.max(0, o.km - Number(kmRec)).toFixed(1);
+
+        // Tramo recorrido (verde sólido)
+        if (coveredPts.length > 1) {
+          L.polyline(coveredPts, {
+            color: '#0f7b4b',
+            weight: isSel ? 5.5 : 2.5,
+            opacity: isSel ? 0.95 : 0.4
+          }).addTo(routeGroup);
+        }
+
+        // Tramo restante (naranja punteado)
+        if (remainPts.length > 1 && !o.entregado) {
+          L.polyline(remainPts, {
+            color: isSel ? '#ff4d00' : '#94a3b8',
+            weight: isSel ? 5 : 2,
+            dashArray: isSel ? '9, 7' : '5, 5',
+            opacity: isSel ? 0.95 : 0.45
+          }).addTo(routeGroup);
+        }
+
+        // Marcador destino + etiqueta flotante de kilómetros para el domicilio seleccionado
+        if (isSel) {
+          L.circleMarker([o.dest_lat, o.dest_lng], {
+            radius: 8, color: '#111114', weight: 2, fillColor: o.entregado ? '#0f7b4b' : '#2563eb', fillOpacity: 1
+          }).addTo(routeGroup).bindTooltip(`🏁 Destino: ${o.ciudad} (${o.km} km)`, { permanent: true, direction: 'right', offset: [8, 0] });
+
+          const midPt = pts[Math.floor(pts.length / 2)];
+          const kmBadge = L.divIcon({
+            className: 'km-route-badge',
+            html: `<div style="background:#111114; color:#fff; padding:4px 9px; border-radius:999px; font-size:11px; font-weight:800; white-space:nowrap; border:2px solid #ff4d00; box-shadow:0 4px 12px rgba(0,0,0,0.28);">🛣️ ${o.km} km totales · ${o.entregado ? 'Entregado ✓' : 'Faltan ' + kmRest + ' km'}</div>`,
+            iconSize: [180, 26],
+            iconAnchor: [90, 13]
+          });
+          L.marker(midPt, { icon: kmBadge, interactive: false }).addTo(routeGroup);
+        }
+
+        // Marcador del domiciliario en movimiento
+        const courierIcon = L.divIcon({
+          className: 'courier-pin',
+          html: `<div style="background:${o.entregado ? '#0f7b4b' : '#ff4d00'}; color:#fff; width:${isSel ? 34 : 26}px; height:${isSel ? 34 : 26}px; border-radius:50%; display:grid; place-items:center; font-size:${isSel ? 16 : 12}px; border:2.5px solid #fff; box-shadow:0 4px 14px rgba(0,0,0,0.35); cursor:pointer;">${o.entregado ? '✓' : '🛵'}</div>`,
+          iconSize: isSel ? [34, 34] : [26, 26],
+          iconAnchor: isSel ? [17, 17] : [13, 13]
+        });
+        const mk = L.marker(cur.coord, { icon: courierIcon, zIndexOffset: isSel ? 1000 : 100 }).addTo(routeGroup);
+        mk.on('click', () => selectOrder(o.codigo, true));
+        mk.bindPopup(`<strong>${o.codigo} · ${o.domiciliario}</strong><br>CC: ${o.dom_cedula} · Tel: ${o.dom_telefono}<br>Ruta: Medellín ➔ ${o.ciudad} (${o.km} km)<br>Recorrido: ${kmRec} km · Restan: ${kmRest} km (${Math.round(o.progreso)}%)<br><strong>Cobro:</strong> ${o.cobro_domiciliario}`);
+        if (isSel) {
+          mk.bindTooltip(`${o.domiciliario} · ${Math.round(o.progreso)}% (${kmRest} km)`, { permanent: true, direction: 'top', offset: [0, -18] });
+        }
+      });
+
+      if (shouldFit && selOrder && mapMode !== 'radar') {
+        const pts = buildRoutePoints(selOrder.dest_lat, selOrder.dest_lng, 20);
+        map.fitBounds(L.latLngBounds(pts), { padding: [55, 55], maxZoom: 11 });
+      }
+    }
+
+    function selectOrder(codigo, scrollToMap = false) {
+      selectedCode = codigo;
+      const orders = CrazyDB.getPedidos();
+      syncMapMarkers(orders, true);
+      document.querySelectorAll('.delivery-card').forEach(c => {
+        const active = c.dataset.code === codigo;
+        c.style.borderColor = active ? '#ff4d00' : '#e6e6ea';
+        c.style.boxShadow = active ? '0 0 0 3px rgba(255,77,0,0.16)' : 'none';
+      });
+      if (scrollToMap) {
+        document.getElementById('map-selected-hud').scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }
+
+    function startLiveGPS(codigo) {
+      const o = CrazyDB.getPedidos().find(x => x.codigo === codigo);
+      if (!o || o.bloqueado || activeTimers[codigo]) return;
+      selectedCode = codigo;
+      syncMapMarkers(CrazyDB.getPedidos(), true);
+      document.getElementById('map-selected-hud').scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+      activeTimers[codigo] = setInterval(() => {
+        const list = CrazyDB.getPedidos();
+        const curr = list.find(x => x.codigo === codigo);
+        if (!curr || curr.bloqueado || curr.progreso >= 100) {
+          clearInterval(activeTimers[codigo]);
+          delete activeTimers[codigo];
+          renderAdmin();
+          return;
+        }
+        const nextPct = Math.min(100, curr.progreso + 1);
+        CrazyDB.setProgresoGPS(codigo, nextPct);
+        const updated = CrazyDB.getPedidos();
+        const item = updated.find(x => x.codigo === codigo);
+        syncMapMarkers(updated, false);
+
+        const bar = document.getElementById('bar-' + codigo);
+        const pct = document.getElementById('pct-' + codigo);
+        const gps = document.getElementById('gps-' + codigo);
+        if (bar) bar.style.width = nextPct + '%';
+        if (pct) pct.textContent = Math.round(nextPct) + '%';
+        if (gps && item) {
+          const pts = buildRoutePoints(item.dest_lat, item.dest_lng, 60);
+          const pos = pointOnRoute(pts, nextPct).coord;
+          const kmRec = (item.km * (nextPct / 100)).toFixed(1);
+          const kmRest = Math.max(0, item.km - Number(kmRec)).toFixed(1);
+          gps.textContent = `GPS: ${pos[0].toFixed(4)}, ${pos[1].toFixed(4)} · Recorridos ${kmRec} km · Restan ${kmRest} km`;
+        }
+        if (nextPct >= 100) {
+          clearInterval(activeTimers[codigo]);
+          delete activeTimers[codigo];
+          renderAdmin();
+        }
+      }, 140);
+    }
+
+    function setMapMode(mode) {
+      mapMode = mode;
+      const mapEl = document.getElementById('colombia-map');
+      const radEl = document.getElementById('radar-wrap');
+      const bStr = document.getElementById('btn-mode-streets');
+      const bSat = document.getElementById('btn-mode-sat');
+      const bRad = document.getElementById('btn-mode-radar');
+      [bStr, bSat, bRad].forEach(b => {
+        b.className = 'btn btn-borde btn-sm';
+        b.style.color = '#fff';
+        b.style.borderColor = '#fff';
+      });
+      const activeBtn = mode === 'streets' ? bStr : (mode === 'sat' ? bSat : bRad);
+      activeBtn.className = 'btn btn-acento btn-sm';
+      activeBtn.style.color = '';
+      activeBtn.style.borderColor = '';
+
+      if (mode === 'radar') {
+        mapEl.style.display = 'none';
+        radEl.style.display = 'block';
+        renderRadarSVG(CrazyDB.getPedidos());
+      } else {
+        radEl.style.display = 'none';
+        mapEl.style.display = 'block';
+        initMap();
+        if (map && streetLayer && satLayer) {
+          if (mode === 'streets') {
+            if (map.hasLayer(satLayer)) map.removeLayer(satLayer);
+            if (!map.hasLayer(streetLayer)) streetLayer.addTo(map);
+          } else {
+            if (map.hasLayer(streetLayer)) map.removeLayer(streetLayer);
+            if (!map.hasLayer(satLayer)) satLayer.addTo(map);
+          }
+        }
+        syncMapMarkers(CrazyDB.getPedidos(), true);
+        setTimeout(() => { if (map) map.invalidateSize(); }, 180);
+      }
+    }
+
+    document.getElementById('btn-mode-streets').onclick = () => setMapMode('streets');
+    document.getElementById('btn-mode-sat').onclick = () => setMapMode('sat');
+    document.getElementById('btn-mode-radar').onclick = () => setMapMode('radar');
+
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.onclick = () => {
+        document.querySelectorAll('.tab-btn').forEach(x => x.classList.remove('activo'));
+        document.querySelectorAll('.tab-panel').forEach(x => x.classList.remove('activo'));
+        btn.classList.add('activo');
+        document.getElementById(btn.dataset.tab).classList.add('activo');
+        if (btn.dataset.tab === 'tab-gps' && map && mapMode !== 'radar') setTimeout(() => map.invalidateSize(), 200);
+      };
+    });
+
+    function renderAdmin() {
+      const inv = CrazyDB.getInventario(), users = CrazyDB.getUsuarios(), orders = CrazyDB.getPedidos(), couriers = CrazyDB.getCouriers();
+      const deliveredCount = orders.filter(o => o.entregado).length;
+      const totalShipRev = orders.reduce((s, o) => s + (o.envio || 0), 0);
+      const totalOrdersRev = orders.reduce((s, o) => s + (o.total || 0), 0);
+      const totalCatalogRev = inv.reduce((s, p) => s + (p.vendidos * p.precio), 0);
+
+      document.getElementById('k-refs').textContent = inv.length;
+      document.getElementById('k-entregados').textContent = `${deliveredCount} / ${orders.length}`;
+      document.getElementById('k-envios').textContent = CrazyUI.cop(totalShipRev);
+      document.getElementById('k-rev').textContent = CrazyUI.cop(totalCatalogRev + totalOrdersRev);
+
+      initMap();
+      syncMapMarkers(orders, !selectedCode);
+
+      const dWrap = document.getElementById('deliveries-list');
+      dWrap.innerHTML = '';
+      orders.forEach(o => {
+        const pts = buildRoutePoints(o.dest_lat, o.dest_lng, 60);
+        const pos = pointOnRoute(pts, o.progreso).coord;
+        const kmRec = (o.km * (o.progreso / 100)).toFixed(1);
+        const kmRest = Math.max(0, o.km - Number(kmRec)).toFixed(1);
+        const isSel = o.codigo === selectedCode;
+        const gmapsUrl = `https://www.google.com/maps/dir/Medellin,+Antioquia/${encodeURIComponent(o.ciudad + ', Colombia')}`;
+        const card = document.createElement('article');
+        card.className = 'delivery-card';
+        card.dataset.code = o.codigo;
+        card.style.cursor = 'pointer';
+        if (isSel) {
+          card.style.borderColor = '#ff4d00';
+          card.style.boxShadow = '0 0 0 3px rgba(255,77,0,0.16)';
+        }
+        card.innerHTML = `
+          <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:0.8rem;">
+            <div>
+              <span class="status-pill ${o.entregado ? 'st-ok' : 'st-route'}">${o.entregado ? '✅ Entregado con éxito' : '🛵 ' + o.estado_entrega}</span>
+              <h3 style="margin-top:0.4rem; font-size:1.06rem;">Pedido ${o.codigo} · Cliente: ${o.cliente}</h3>
+              <p class="prod-meta">📍 <strong>Destino:</strong> ${o.direccion}, ${o.ciudad} (<strong>${o.km} km</strong> desde Medellín)</p>
+              <p class="prod-meta">🛵 <strong>Domiciliario:</strong> ${o.domiciliario} · <strong>CC:</strong> ${o.dom_cedula} · <strong>Tel:</strong> ${o.dom_telefono} · ${o.placa}</p>
+              <p id="gps-${o.codigo}" style="font-size:0.84rem; font-weight:700; color:#111114; margin-top:0.25rem;">GPS: ${pos[0].toFixed(4)}, ${pos[1].toFixed(4)} · Recorridos ${kmRec} km · Restan ${kmRest} km</p>
+            </div>
+            <div style="text-align:right; background:#f5f5f7; padding:0.75rem 1rem; border-radius:10px; min-width:230px;">
+              <div style="font-size:0.8rem; color:#636369;">Compra productos: ${CrazyUI.cop(o.subtotal)}</div>
+              <div style="font-size:0.8rem; color:#ff4d00; font-weight:700;">Domicilio (${o.km} km): ${CrazyUI.cop(o.envio)}</div>
+              <div style="font-size:1.06rem; font-weight:900; margin-top:0.2rem;">Total: ${CrazyUI.cop(o.total)}</div>
+              <div style="font-size:0.78rem; font-weight:800; color:#0f7b4b; margin-top:0.2rem;">Recibe domiciliario: ${o.cobro_domiciliario}</div>
+              <div style="font-size:0.74rem; color:#636369;">Método: ${o.metodo}</div>
+            </div>
+          </div>
+          <div class="route-bar-bg"><div class="route-bar-fill" id="bar-${o.codigo}" style="width:${o.progreso}%;"></div></div>
+          <div style="display:flex; justify-content:space-between; font-size:0.76rem; color:#636369; margin-bottom:0.85rem;">
+            <span>Bodega Medellín (0 km)</span><strong id="pct-${o.codigo}">${Math.round(o.progreso)}% (${kmRec} / ${o.km} km)</strong><span>${o.ciudad} (${o.km} km)</span>
+          </div>
+          <div style="display:flex; gap:0.6rem; flex-wrap:wrap; align-items:center;">
+            <button type="button" class="btn btn-negro btn-sm" data-select-route="${o.codigo}">🗺️ Ver trayecto (${o.km} km)</button>
+            ${o.bloqueado ? '<span class="lock-badge">🔒 Entrega completada con éxito · Estado definitivo (no cancelable ni reversible)</span>' :
+              `<button type="button" class="btn btn-acento btn-sm" data-gps-start="${o.codigo}">▶ Emular entrega GPS</button>
+               <button type="button" class="btn btn-sm" style="background:#0f7b4b; color:#fff;" data-gps-done="${o.codigo}">Confirmar Entrega Exitosa ✓</button>`}
+            <a href="${gmapsUrl}" target="_blank" class="btn btn-borde btn-sm">Google Maps ↗</a>
+          </div>
+        `;
+        card.onclick = (ev) => {
+          if (ev.target.closest('button, a')) return;
+          selectOrder(o.codigo, true);
+        };
+        dWrap.appendChild(card);
+      });
+
+      dWrap.querySelectorAll('[data-select-route]').forEach(b => b.onclick = () => selectOrder(b.dataset.selectRoute, true));
+      dWrap.querySelectorAll('[data-gps-start]').forEach(b => b.onclick = () => startLiveGPS(b.dataset.gpsStart));
+      dWrap.querySelectorAll('[data-gps-done]').forEach(b => b.onclick = () => {
+        const cod = b.dataset.gpsDone;
+        if (activeTimers[cod]) { clearInterval(activeTimers[cod]); delete activeTimers[cod]; }
+        CrazyDB.setProgresoGPS(cod, 100);
+        renderAdmin();
+      });
+
+      // Tab 2: Domiciliarios BD
+      document.getElementById('tbl-couriers').innerHTML = couriers.map(c =>
+        `<tr><td>${c.id}</td><td><strong>${c.nombre}</strong></td><td>${c.cedula}</td><td>${c.telefono}</td><td>${c.placa}</td></tr>`
+      ).join('');
+      document.getElementById('tbl-dom-bd').innerHTML = orders.map(o =>
+        `<tr><td><strong>${o.codigo}</strong></td><td>${o.domiciliario}<br><span class="prod-meta">CC ${o.dom_cedula} · ${o.dom_telefono}</span></td><td>${o.ciudad}<br><span class="prod-meta">${o.direccion}</span></td><td>${CrazyUI.cop(o.subtotal)}</td><td>${CrazyUI.cop(o.envio)}</td><td><strong>${CrazyUI.cop(o.total)}</strong></td><td><strong>${o.cobro_domiciliario}</strong></td><td><span class="status-pill ${o.entregado ? 'st-ok' : 'st-route'}">${o.estado_entrega}</span></td></tr>`
+      ).join('');
+
+      // Tab 3: Inventario
+      const q = (document.getElementById('adm-search').value || '').toLowerCase();
+      const filt = inv.filter(p => !q || p.nombre.toLowerCase().includes(q) || p.sku.toLowerCase().includes(q) || p.marca.toLowerCase().includes(q));
+      const tbI = document.getElementById('tbl-inv');
+      tbI.innerHTML = '';
+      filt.forEach(p => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td><img src="${p.imagen}" onerror="this.onerror=null;this.src='${p.fallback}';" style="width:42px; height:42px; object-fit:contain; background:#f5f5f7; border-radius:6px;"></td><td>${p.sku}</td><td><strong>${p.nombre}</strong></td><td>${p.marca}</td><td style="max-width:210px; font-size:0.78rem;">${p.material}</td><td>${CrazyUI.cop(p.precio)}</td><td><strong>${p.stock}</strong></td><td>${p.vendidos}</td><td><button type="button" class="page-btn" data-rep="${p.id}">+10</button></td>`;
+        tbI.appendChild(tr);
+      });
+      tbI.querySelectorAll('[data-rep]').forEach(b => b.onclick = () => { CrazyDB.reponerStock(Number(b.dataset.rep), 10); renderAdmin(); });
+
+      // Tab 4: Usuarios
+      document.getElementById('tbl-usuarios').innerHTML = users.map(u =>
+        `<tr><td><strong>${u.nombre}</strong></td><td>${u.cedula}</td><td>${u.correo}</td><td>${u.direccion}</td><td>${u.rol}</td></tr>`
+      ).join('');
+    }
+
+    document.getElementById('form-admin-login').onsubmit = e => {
+      e.preventDefault();
+      if (document.getElementById('a-mail').value.trim() === 'admin@crazy.com' && document.getElementById('a-pass').value === 'CrazyAdmin2026') {
+        document.getElementById('admin-gate').style.display = 'none';
+        document.getElementById('admin-panel').style.display = 'block';
+        renderAdmin();
+        setTimeout(() => { if (map) map.invalidateSize(); }, 150);
+      } else {
+        const m = document.getElementById('a-msg'); m.className = 'alert-msg err'; m.textContent = 'Credenciales inválidas (admin@crazy.com / CrazyAdmin2026)';
+      }
+    };
+    document.getElementById('adm-search').oninput = renderAdmin;
+    document.getElementById('btn-reset-db').onclick = () => { CrazyDB.resetDB(); renderAdmin(); };
+    document.getElementById('btn-export-json').onclick = () => {
+      const blob = new Blob([JSON.stringify({ inventario: CrazyDB.getInventario(), domicilios: CrazyDB.getPedidos(), domiciliarios: CrazyDB.getCouriers(), ciudades: CrazyDB.getCities(), usuarios: CrazyDB.getUsuarios() }, null, 2)], { type: 'application/json' });
+      const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'base_datos_crazy_155.json'; a.click();
+    };
+    document.getElementById('form-add-prod').onsubmit = e => {
+      e.preventDefault();
+      CrazyDB.agregarProductoAdmin({
+        nombre: document.getElementById('np-nombre').value.trim(), marca: document.getElementById('np-marca').value,
+        categoria: document.getElementById('np-cat').value, material: document.getElementById('np-mat').value.trim(),
+        precio: document.getElementById('np-precio').value, stock: document.getElementById('np-stock').value
+      });
+      e.target.reset(); renderAdmin();
+    };
+  </script>
+</body>
+</html>

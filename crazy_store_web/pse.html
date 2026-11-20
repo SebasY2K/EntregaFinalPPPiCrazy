@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Certificación Bancaria PSE | CRAZY</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body style="background:#f2f5f9;">
+  <header style="background:#003366; color:#ffffff; padding:1rem 0; border-bottom:4px solid #f5b800;">
+    <div class="contenedor" style="display:flex; justify-content:space-between; align-items:center;">
+      <div style="display:flex; align-items:center; gap:0.75rem;">
+        <div style="background:#ffffff; color:#003366; font-weight:900; padding:0.3rem 0.7rem; border-radius:6px;">PSE</div>
+        <strong>Pagos Seguros en Línea · Certificación de Identidad</strong>
+      </div>
+      <span style="font-size:0.84rem;">Conexión cifrada TLS 1.3</span>
+    </div>
+  </header>
+  <main class="seccion">
+    <div class="contenedor" style="max-width:680px;">
+      <div style="background:#ffffff; border:1px solid #d5dee8; border-radius:14px; padding:2rem; box-shadow:0 12px 30px rgba(0,51,102,0.08);">
+        <span class="kicker" style="color:#003366;">Comercio verificado: CRAZY Sports Co.</span>
+        <h1 style="font-size:1.55rem; margin-bottom:0.6rem;">Certificación de pago bancario</h1>
+        <p class="prod-meta" style="margin-bottom:1.1rem;">Verifica el total (incluye envío desde Medellín) e ingresa tu clave dinámica de 6 dígitos.</p>
+        <div style="background:#f5f8fc; border:1px solid #d5dee8; border-radius:10px; padding:1rem 1.2rem; margin-bottom:1.3rem; display:grid; gap:0.45rem; font-size:0.92rem;">
+          <div><strong>Entidad financiera:</strong> <span id="pse-banco"></span></div>
+          <div><strong>Código Único de Seguimiento (CUS):</strong> <span id="pse-cus"></span></div>
+          <div><strong>Titular / Documento:</strong> <span id="pse-titular"></span></div>
+          <div><strong>Destino envío:</strong> <span id="pse-zona"></span></div>
+          <div style="font-size:1.1rem; padding-top:0.4rem; border-top:1px solid #d5dee8;"><strong>Valor total certificado:</strong> <span id="pse-total" style="color:#003366;"></span></div>
+        </div>
+        <form id="form-pse" style="display:grid; gap:0.95rem;">
+          <div>
+            <label for="pse-clave" style="display:block; font-weight:700; font-size:0.86rem; margin-bottom:0.3rem;">Clave dinámica bancaria (6 dígitos numéricos)</label>
+            <input type="password" id="pse-clave" inputmode="numeric" maxlength="6" placeholder="Ej. 482910" required style="width:100%; letter-spacing:0.25em; font-size:1.1rem;">
+          </div>
+          <div style="display:flex; gap:0.8rem; flex-wrap:wrap;">
+            <button type="submit" class="btn" style="background:#003366; color:#ffffff; flex:1;">Certificar y Autorizar Pago</button>
+            <a href="checkout.html" class="btn btn-borde">Cancelar</a>
+          </div>
+          <div id="pse-msg" class="alert-msg"></div>
+        </form>
+      </div>
+    </div>
+  </main>
+  <script src="js/database.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    const pending = JSON.parse(sessionStorage.getItem('crazy_pse_pending') || 'null');
+    const user = CrazyDB.getSesion();
+    const cus = 'PSE-' + Math.floor(10000000 + Math.random() * 89999999);
+    if (!pending || !user) { window.location.href = 'checkout.html'; }
+    else {
+      document.getElementById('pse-banco').textContent = pending.banco;
+      document.getElementById('pse-cus').textContent = cus;
+      document.getElementById('pse-titular').textContent = `${user.nombre} (CC ${pending.doc})`;
+      document.getElementById('pse-zona').textContent = `${pending.city.ciudad + ', ' + pending.city.depto} (Envío: ${CrazyUI.cop(pending.city.costo)})`;
+      document.getElementById('pse-total').textContent = CrazyUI.cop(pending.total);
+    }
+    document.getElementById('pse-clave').addEventListener('input', e => { e.target.value = e.target.value.replace(/[^0-9]/g, '').slice(0, 6); });
+    document.getElementById('form-pse').onsubmit = e => {
+      e.preventDefault();
+      const clave = document.getElementById('pse-clave').value;
+      const msg = document.getElementById('pse-msg');
+      if (clave.length !== 6) { msg.className = 'alert-msg err'; msg.textContent = 'La clave dinámica debe tener 6 dígitos.'; return; }
+      const ped = CrazyDB.registrarPedido({
+        nombre: user.nombre, cedula: pending.doc, correo: user.correo, direccion: user.direccion,
+        city: pending.city, metodo: 'PSE', banco: pending.banco, cus: cus
+      });
+      sessionStorage.removeItem('crazy_pse_pending');
+      msg.className = 'alert-msg ok';
+      msg.innerHTML = `¡Pago PSE certificado! CUS: <strong>${cus}</strong> · Pedido <strong>${ped.codigo}</strong> enviado a domiciliario. <a href="admin.html" style="text-decoration:underline; margin-left:6px;">Ver seguimiento</a>`;
+      document.getElementById('form-pse').querySelector('button[type="submit"]').disabled = true;
+    };
+  </script>
+</body>
+</html>

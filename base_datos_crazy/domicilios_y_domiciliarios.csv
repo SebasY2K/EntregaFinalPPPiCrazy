@@ -1,0 +1,4 @@
+codigo,fecha,cliente,cedula,direccion,ciudad,km,subtotal,envio,total,metodo,cobro_domiciliario,domiciliario,dom_cedula,dom_telefono,placa,estado_entrega
+CRZ-910421,2026-11-18 15:10,Camila Restrepo,1036654321,"Cra 76 # 34-18, Laureles","Envigado, Antioquia",11,584950,5500,590450,ADDI (3 cuotas),Transferencia / Pagado online,Andrés Felipe Montoya,1037645210,310 482 9104,KTR-48F (Moto),En camino
+CRZ-910388,2026-11-18 11:30,Mateo Villa,1017234890,Calle 38 Sur # 43-12,"Medellín, Antioquia",5,499950,5500,505450,Contra entrega,Efectivo,Julián David Ospina,1017208934,314 759 2218,MNV-92G (Moto),Entregado con éxito
+CRZ-910455,2026-11-18 17:05,Valentina Zapata,1040789123,Carrera 50 # 41-22,"Rionegro, Antioquia",38,429900,7000,436900,PSE (Bancolombia),Transferencia / Pagado online,Carlos Mario Henao,71389452,300 615 8840,FGH-11D (Camioneta),En camino
